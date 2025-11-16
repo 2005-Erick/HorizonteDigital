@@ -6,7 +6,7 @@ import { defineConfig } from "vite";
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  base: "horizonte-digital/",
+  base: "/horizonte-digital",
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
