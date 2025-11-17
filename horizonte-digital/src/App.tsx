@@ -87,11 +87,6 @@ const ListItem = React.forwardRef<
 >(({ className, title, children, ...props }, ref) => {
   return (
     <li>
-      {/* 
-        Sugestão: O componente ListItem está bem implementado. 
-        O uso de React.forwardRef e a composição com `asChild` do Radix UI (usado pelo shadcn) 
-        são excelentes práticas para criar componentes flexíveis e acessíveis.
-      */}
       <NavigationMenuLink asChild>
         <a
           ref={ref}
@@ -112,8 +107,6 @@ const ListItem = React.forwardRef<
 });
 ListItem.displayName = "ListItem";
 
-// Sugestão: Definir tipos para os objetos principais do seu aplicativo.
-// Isso melhora a legibilidade, a manutenção e o autocompletar do editor.
 type Product = {
   id: number;
   name: string;
@@ -126,7 +119,7 @@ type Product = {
 };
 
 type CartItem = {
-  id: string; // Usando o nome do produto como ID
+  id: string;
   name: string;
   price: number;
   quantity: number;
@@ -134,13 +127,11 @@ type CartItem = {
   image: string;
 };
 
-// Sugestão: Mover dados estáticos para fora do componente.
-// Isso evita que eles sejam recriados em cada renderização, melhorando a performance.
 const productData: Product[] = [
   {
     id: 1,
     name: "iPhone 14 Pro",
-    image: "/products/Iphone14PRO.jpg",
+    image: "products/Iphone14PRO.jpg",
     discount: 15,
     rating: 5,
     reviews: 342,
@@ -150,7 +141,7 @@ const productData: Product[] = [
   {
     id: 2,
     name: "Galaxy Z Flip 7 FE",
-    image: "/products/GalaxyZFlip7FE.jpg",
+    image: "products/GalaxyZFlip7FE.jpg",
     discount: 25,
     rating: 4,
     reviews: 128,
@@ -160,7 +151,7 @@ const productData: Product[] = [
   {
     id: 3,
     name: "Notebook Lenovo",
-    image: "/products/NotebookLenovo.jpg",
+    image: "products/NotebookLenovo.jpg",
     discount: 10,
     rating: 4,
     reviews: 567,
@@ -170,7 +161,7 @@ const productData: Product[] = [
   {
     id: 4,
     name: "Galaxy A36",
-    image: "/products/GalaxyA36.jpg",
+    image: "products/GalaxyA36.jpg",
     discount: 35,
     rating: 5,
     reviews: 890,
@@ -180,7 +171,7 @@ const productData: Product[] = [
   {
     id: 5,
     name: "Moto G15",
-    image: "/products/MotoG15.jpg",
+    image: "products/MotoG15.jpg",
     discount: 20,
     rating: 4,
     reviews: 245,
@@ -190,7 +181,7 @@ const productData: Product[] = [
   {
     id: 6,
     name: "Notebook Acer",
-    image: "/products/NotebookAcer.jpg",
+    image: "products/NotebookAcer.jpg",
     discount: 30,
     rating: 5,
     reviews: 421,
@@ -205,7 +196,7 @@ const allProducts: Product[] = [
   {
     id: 7,
     name: "Galaxy A16",
-    image: "/products/GalaxyA16.jpg",
+    image: "products/GalaxyA16.jpg",
     discount: 12,
     rating: 4,
     reviews: 456,
@@ -326,9 +317,6 @@ function App() {
     discount: number,
     image: string
   ) => {
-    // Sugestão: Usar o ID numérico do produto pode ser mais robusto do que uma string derivada do nome.
-    // No entanto, para este protótipo, a abordagem atual funciona bem.
-    // Apenas um ponto a se considerar para uma aplicação real.
     const productId = productName.replace(/\s+/g, "-");
 
     setCartItems((prevItems) => {
@@ -365,8 +353,6 @@ function App() {
     toast.success("Produto removido do carrinho!");
   };
 
-  // Sugestão: `useMemo` para otimizar o cálculo do total e da contagem de itens.
-  // O valor só será recalculado quando `cartItems` for alterado.
   const cartTotal = React.useMemo(() => {
     return cartItems.reduce((total, item) => {
       const discountedPrice = (item.price * (100 - item.discount)) / 100;
@@ -383,7 +369,6 @@ function App() {
     toast.success("Carrinho limpo!");
   };
 
-  // Função para filtrar produtos
   const filteredProducts = React.useMemo(() => {
     let filtered = allProducts;
 
@@ -409,16 +394,13 @@ function App() {
       );
     }
 
-    // Filtro de frete grátis (todos os produtos têm frete grátis neste caso)
+    // Filtro de frete grátis
     if (freeShipping) {
-      filtered = filtered.filter(
-        (product) => product.price > 0 // Todos têm frete grátis
-      );
+      filtered = filtered.filter((product) => product.price > 0);
     }
 
     // Filtro de condição (novo/usado)
     if (productCondition.length > 0) {
-      // Por enquanto, todos os produtos são "novo"
       filtered = filtered.filter(() => productCondition.includes("new"));
     }
 
@@ -443,7 +425,7 @@ function App() {
     setSelectedBrands((prev) =>
       prev.includes(brand) ? prev.filter((b) => b !== brand) : [...prev, brand]
     );
-    setCurrentPage(1); // Resetar para página 1
+    setCurrentPage(1);
   };
 
   const handleToggleCondition = (condition: string) => {
@@ -459,7 +441,6 @@ function App() {
     <div className="min-h-screen bg-white">
       <Toaster richColors />
       <header className="bg-emerald-700 text-white shadow-md">
-        {/* Header content remains the same */}
         <div className="container mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-x-6 gap-y-4">
           <Sheet>
             <SheetTrigger asChild>
@@ -1119,7 +1100,7 @@ function App() {
                                   <div className="absolute bottom-3 left-3 bg-orange-500 text-white px-2 py-1 rounded text-xs font-bold flex items-center gap-1">
                                     ⚡ Flash
                                   </div>
-                                  {index === 0 && ( // Only for the first product
+                                  {index === 0 && (
                                     <TooltipProvider>
                                       <Tooltip>
                                         <TooltipTrigger asChild>
@@ -1254,7 +1235,7 @@ function App() {
                             <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded text-xs font-bold">
                               -{product.discount}%
                             </div>
-                            {index === 0 && ( // Only for the first product
+                            {index === 0 && (
                               <TooltipProvider>
                                 <Tooltip>
                                   <TooltipTrigger asChild>
