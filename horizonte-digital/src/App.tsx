@@ -62,6 +62,12 @@ import { Switch } from "./components/ui/switch";
 import { Toaster, toast } from "sonner";
 import { Toggle } from "./components/ui/toggle";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "./components/ui/tooltip";
+import {
   Search,
   ShoppingCart,
   User,
@@ -69,6 +75,7 @@ import {
   Menu,
   Star,
   Trash2,
+  Info,
 } from "lucide-react";
 
 const ListItem = React.forwardRef<
@@ -77,6 +84,11 @@ const ListItem = React.forwardRef<
 >(({ className, title, children, ...props }, ref) => {
   return (
     <li>
+      {/* 
+        Sugestão: O componente ListItem está bem implementado. 
+        O uso de React.forwardRef e a composição com `asChild` do Radix UI (usado pelo shadcn) 
+        são excelentes práticas para criar componentes flexíveis e acessíveis.
+      */}
       <NavigationMenuLink asChild>
         <a
           ref={ref}
@@ -97,99 +109,112 @@ const ListItem = React.forwardRef<
 });
 ListItem.displayName = "ListItem";
 
+// Sugestão: Definir tipos para os objetos principais do seu aplicativo.
+// Isso melhora a legibilidade, a manutenção e o autocompletar do editor.
+type Product = {
+  id: number;
+  name: string;
+  image: string;
+  discount: number;
+  rating: number;
+  reviews: number;
+  price: number;
+  brand: string;
+};
+
+type CartItem = {
+  id: string; // Usando o nome do produto como ID
+  name: string;
+  price: number;
+  quantity: number;
+  discount: number;
+  image: string;
+};
+
+// Sugestão: Mover dados estáticos para fora do componente.
+// Isso evita que eles sejam recriados em cada renderização, melhorando a performance.
+const productData: Product[] = [
+  {
+    id: 1,
+    name: "iPhone 14 Pro",
+    image: "/products/Iphone14PRO.jpg",
+    discount: 15,
+    rating: 5,
+    reviews: 342,
+    price: 4999.99,
+    brand: "Apple",
+  },
+  {
+    id: 2,
+    name: "Galaxy Z Flip 7 FE",
+    image: "/products/GalaxyZFlip7FE.jpg",
+    discount: 25,
+    rating: 4,
+    reviews: 128,
+    price: 3499.99,
+    brand: "Samsung",
+  },
+  {
+    id: 3,
+    name: "Notebook Lenovo",
+    image: "/products/NotebookLenovo.jpg",
+    discount: 10,
+    rating: 4,
+    reviews: 567,
+    price: 5299.99,
+    brand: "Lenovo",
+  },
+  {
+    id: 4,
+    name: "Galaxy A36",
+    image: "/products/GalaxyA36.jpg",
+    discount: 35,
+    rating: 5,
+    reviews: 890,
+    price: 1999.99,
+    brand: "Samsung",
+  },
+  {
+    id: 5,
+    name: "Moto G15",
+    image: "/products/MotoG15.jpg",
+    discount: 20,
+    rating: 4,
+    reviews: 245,
+    price: 899.99,
+    brand: "Motorola",
+  },
+  {
+    id: 6,
+    name: "Notebook Acer",
+    image: "/products/NotebookAcer.jpg",
+    discount: 30,
+    rating: 5,
+    reviews: 421,
+    price: 2899.99,
+    brand: "Acer",
+  },
+];
+
+// Dados para a grid de produtos (todos os produtos)
+const allProducts: Product[] = [
+  ...productData,
+  {
+    id: 7,
+    name: "Galaxy A16",
+    image: "/products/GalaxyA16.jpg",
+    discount: 12,
+    rating: 4,
+    reviews: 456,
+    price: 799.99,
+    brand: "Samsung",
+  },
+];
+
 function App() {
   const [cep, setCep] = useState("");
   const [inputCep, setInputCep] = useState("");
-  const [cartCount, setCartCount] = useState(0);
-  const [cartItems, setCartItems] = useState<
-    {
-      id: string;
-      name: string;
-      price: number;
-      quantity: number;
-      discount: number;
-      image: string;
-    }[]
-  >([]);
-
-  // Dados de produtos com dados fixos para evitar re-renders inconsistentes
-  const productData = [
-    {
-      id: 1,
-      name: "iPhone 14 Pro",
-      image: "/products/Iphone14PRO.jpg",
-      discount: 15,
-      rating: 5,
-      reviews: 342,
-      price: 4999.99,
-      brand: "Apple",
-    },
-    {
-      id: 2,
-      name: "Galaxy Z Flip 7 FE",
-      image: "/products/GalaxyZFlip7FE.jpg",
-      discount: 25,
-      rating: 4,
-      reviews: 128,
-      price: 3499.99,
-      brand: "Samsung",
-    },
-    {
-      id: 3,
-      name: "Notebook Lenovo",
-      image: "/products/NotebookLenovo.jpg",
-      discount: 10,
-      rating: 4,
-      reviews: 567,
-      price: 5299.99,
-      brand: "Lenovo",
-    },
-    {
-      id: 4,
-      name: "Galaxy A36",
-      image: "/products/GalaxyA36.jpg",
-      discount: 35,
-      rating: 5,
-      reviews: 890,
-      price: 1999.99,
-      brand: "Samsung",
-    },
-    {
-      id: 5,
-      name: "Moto G15",
-      image: "/products/MotoG15.jpg",
-      discount: 20,
-      rating: 4,
-      reviews: 245,
-      price: 899.99,
-      brand: "Motorola",
-    },
-    {
-      id: 6,
-      name: "Notebook Acer",
-      image: "/products/NotebookAcer.jpg",
-      discount: 30,
-      rating: 5,
-      reviews: 421,
-      price: 2899.99,
-      brand: "Acer",
-    },
-  ];
-
-  // Dados para a grid de produtos (todos os produtos)
-  const allProducts = [
-    ...productData,
-    {
-      id: 7,
-      name: "Galaxy A16",
-      image: "/products/GalaxyA16.jpg",
-      discount: 12,
-      rating: 4,
-      reviews: 456,
-      price: 799.99,
-      brand: "Samsung",
-    },
-  ];
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
   const handleCepSave = () => {
     setCep(inputCep);
@@ -201,6 +226,9 @@ function App() {
     discount: number,
     image: string
   ) => {
+    // Sugestão: Usar o ID numérico do produto pode ser mais robusto do que uma string derivada do nome.
+    // No entanto, para este protótipo, a abordagem atual funciona bem.
+    // Apenas um ponto a se considerar para uma aplicação real.
     const productId = productName.replace(/\s+/g, "-");
 
     setCartItems((prevItems) => {
@@ -227,32 +255,31 @@ function App() {
       }
     });
 
-    setCartCount((prevCount) => prevCount + 1);
     toast.success(`${productName} foi adicionado ao carrinho!`);
   };
 
   const handleRemoveFromCart = (productId: string) => {
     setCartItems((prevItems) => {
-      const itemToRemove = prevItems.find((item) => item.id === productId);
-      if (itemToRemove) {
-        setCartCount((prevCount) => prevCount - itemToRemove.quantity);
-        return prevItems.filter((item) => item.id !== productId);
-      }
-      return prevItems;
+      return prevItems.filter((item) => item.id !== productId);
     });
     toast.success("Produto removido do carrinho!");
   };
 
-  const calculateTotal = () => {
+  // Sugestão: `useMemo` para otimizar o cálculo do total e da contagem de itens.
+  // O valor só será recalculado quando `cartItems` for alterado.
+  const cartTotal = React.useMemo(() => {
     return cartItems.reduce((total, item) => {
       const discountedPrice = (item.price * (100 - item.discount)) / 100;
       return total + discountedPrice * item.quantity;
     }, 0);
-  };
+  }, [cartItems]);
+
+  const cartCount = React.useMemo(() => {
+    return cartItems.reduce((count, item) => count + item.quantity, 0);
+  }, [cartItems]);
 
   const handleClearCart = () => {
     setCartItems([]);
-    setCartCount(0);
     toast.success("Carrinho limpo!");
   };
 
@@ -426,7 +453,7 @@ function App() {
                       <div className="flex justify-between text-base font-bold">
                         <span>Total:</span>
                         <span className="text-emerald-600 text-lg">
-                          R$ {calculateTotal().toFixed(2)}
+                          R$ {cartTotal.toFixed(2)}
                         </span>
                       </div>
                       <Button className="w-full bg-linear-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-semibold py-2 text-base">
@@ -654,6 +681,21 @@ function App() {
                                   <div className="absolute bottom-3 left-3 bg-orange-500 text-white px-2 py-1 rounded text-xs font-bold flex items-center gap-1">
                                     ⚡ Flash
                                   </div>
+                                  {index === 0 && ( // Only for the first product
+                                    <TooltipProvider>
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <span className="absolute bottom-3 right-3 bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold cursor-help flex items-center gap-1">
+                                            Patrocinado{" "}
+                                            <Info className="h-3 w-3" />
+                                          </span>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                          <p>Este é um produto patrocinado.</p>
+                                        </TooltipContent>
+                                      </Tooltip>
+                                    </TooltipProvider>
+                                  )}
                                 </div>
 
                                 {/* Conteúdo */}
@@ -761,6 +803,20 @@ function App() {
                           <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded text-xs font-bold">
                             -{product.discount}%
                           </div>
+                          {index === 0 && ( // Only for the first product
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <span className="absolute bottom-2 left-2 bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold cursor-help flex items-center gap-1">
+                                    Patrocinado <Info className="h-3 w-3" />
+                                  </span>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>Este é um produto patrocinado.</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          )}
 
                           {/* Ícone de Favorito */}
                           <button className="absolute top-2 left-2 bg-white rounded-full p-1.5 shadow-md hover:bg-red-50 transition-all opacity-0 group-hover:opacity-100">
