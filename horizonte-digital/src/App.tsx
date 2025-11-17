@@ -573,18 +573,6 @@ function App() {
                     </DialogContent>
                   </Dialog>
                   <Separator />
-                  <Button
-                    variant="ghost"
-                    className="flex items-center gap-2 text-black hover:text-gray-700"
-                  >
-                    <User className="h-6 w-6" />
-                    <div>
-                      <p className="text-sm font-semibold leading-tight">
-                        Olá, faça seu login
-                      </p>
-                      <p className="text-xs font-bold">Contas e Listas</p>
-                    </div>
-                  </Button>
                 </nav>
               </div>
             </SheetContent>
