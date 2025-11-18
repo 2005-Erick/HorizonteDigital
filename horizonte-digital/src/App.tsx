@@ -300,7 +300,13 @@ function App() {
   const [inputCep, setInputCep] = useState("");
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [inputValue, setInputValue] = useState("");
   const [priceRange, setPriceRange] = useState([6000]);
+
+  const handleSearch = () => {
+    setSearchTerm(inputValue);
+    setCurrentPage(1);
+  };
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [freeShipping, setFreeShipping] = useState(false);
   const [productCondition, setProductCondition] = useState<string[]>([]);
@@ -620,15 +626,18 @@ function App() {
               type="search"
               placeholder="Pesquisar produtos, marcas e muito mais..."
               className="rounded-r-none focus-visible:ring-0 focus-visible:ring-offset-0 border-r-0 text-black bg-white w-full"
-              value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-                setCurrentPage(1);
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleSearch();
+                }
               }}
             />
             <Button
               type="submit"
               className="bg-emerald-600 hover:bg-emerald-700 rounded-l-none"
+              onClick={handleSearch}
             >
               <Search className="h-5 w-5 text-white" />
             </Button>
